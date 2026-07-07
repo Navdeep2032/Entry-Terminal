@@ -28,7 +28,7 @@ Entry-Terminal/
 │   ├── sketch.ino
 │   └── wokwi-project.txt
 ├── .gitignore
-├── Electrothon_Project_Report.pdf
+├── Report.pdf
 └── README.md
 ```
 
