@@ -16,11 +16,20 @@ A two-phase embedded access-control terminal built for the Electrothon hackathon
 ## Project structure
 
 ```
-electrothon/
-├── electrothon_phase2.ino   # ESP32 sketch (Wokwi)
-└── server/
-    ├── server.js            # Node.js + Express + SQLite log server
-    └── package.json
+Entry-Terminal/
+├── Server/
+│   ├── node_modules/
+│   ├── package-lock.json
+│   ├── package.json
+│   └── server.js
+├── Wokwi files/
+│   ├── diagram.json
+│   ├── libraries.txt
+│   ├── sketch.ino
+│   └── wokwi-project.txt
+├── .gitignore
+├── Electrothon_Project_Report.pdf
+└── README.md
 ```
 
 ---
@@ -29,25 +38,27 @@ electrothon/
 
 Open [wokwi.com](https://wokwi.com) → New Project → **ESP32**. Wire these parts to the pins used in the sketch:
 
-| Component      | Pins                                   |
-|-----------------|-----------------------------------------|
-| 4x4 Keypad      | Rows: `13, 12, 14, 27` — Cols: `26, 25, 33, 32` |
-| I2C LCD 16x2    | SDA `21`, SCL `22` (address `0x27`)     |
-| Red LED         | `2`                                      |
-| Green LED       | `4`                                      |
-| Blue LED        | `5`                                      |
-| Buzzer          | `18`                                     |
+| Component    | Pins                                            |
+| ------------ | ----------------------------------------------- |
+| 4x4 Keypad   | Rows: `13, 12, 14, 27` — Cols: `26, 25, 33, 32` |
+| I2C LCD 16x2 | SDA `21`, SCL `22` (address `0x27`)             |
+| Red LED      | `2`                                             |
+| Green LED    | `4`                                             |
+| Blue LED     | `5`                                             |
+| Buzzer       | `18`                                            |
 
 Add a resistor (~220Ω) in series with each LED.
 
 ### Libraries
 
 Add a `libraries.txt` file in the Wokwi project with:
+
 ```
 LiquidCrystal_I2C
 Keypad
 ArduinoJson
 ```
+
 (`WiFi.h`, `WiFiClientSecure.h`, `HTTPClient.h`, and `time.h` are built into the ESP32 core — no install needed.)
 
 Paste `electrothon_phase2.ino` into `sketch.ino`.
@@ -65,11 +76,13 @@ npm start
 ```
 
 You should see:
+
 ```
 Server listening on port 3000
 ```
 
 View it locally at:
+
 - **`http://localhost:3000/dashboard`** — human-readable dashboard (who's checked in, session history, full activity feed)
 - **`http://localhost:3000/logs`** — raw JSON of the last 200 records
 
@@ -82,22 +95,29 @@ Wokwi's simulated ESP32 runs in the cloud — it **cannot** reach `localhost` on
 ### Option A — Temporary tunnel (fast, good for testing/demos)
 
 In a separate terminal, with the server still running:
+
 ```bash
 npx localtunnel --port 3000
 ```
+
 This prints a temporary public URL, for example:
+
 ```
 your url is: https://fluffy-pandas-repair.loca.lt
 ```
+
 **Keep this terminal window open** the whole time you're testing — the moment you close it, the URL stops working.
 
 In `electrothon_phase2.ino`, set:
+
 ```cpp
 const char* SERVER_URL = "https://fluffy-pandas-repair.loca.lt/post";
 ```
+
 > Replace the subdomain with whatever URL your own `localtunnel` run prints — it's different every time you start a new tunnel session unless you reserve a fixed one.
 
 View the live dashboard at the same base URL:
+
 ```
 https://fluffy-pandas-repair.loca.lt/dashboard
 ```
@@ -125,18 +145,19 @@ This URL stays live permanently (subject to the host's free-tier sleep/wake beha
 
 **Built-in members:**
 
-| ID     | Role     |
-|--------|----------|
-| `1234` | Admin (Alice) |
-| `5678` | Operator (Bob) |
+| ID     | Role             |
+| ------ | ---------------- |
+| `1234` | Admin (Alice)    |
+| `5678` | Operator (Bob)   |
 | `9012` | Operator (Carol) |
-| `3456` | Viewer (Dave) |
+| `3456` | Viewer (Dave)    |
 
-**Check in / check out:** enter a 4-digit ID + `=`. First time → check-in (welcome message). Enter the *same* ID again + `=` → check-out (goodbye message). Each toggles a distinct LED/buzzer pattern.
+**Check in / check out:** enter a 4-digit ID + `=`. First time → check-in (welcome message). Enter the _same_ ID again + `=` → check-out (goodbye message). Each toggles a distinct LED/buzzer pattern.
 
 **Wrong ID:** 3 consecutive failures triggers a 15-second lockout.
 
 **Enroll a new member (Admin only):**
+
 1. From idle, press `D`.
 2. Enter an existing **Admin** ID (e.g. `1234`) + `=` to verify.
 3. Enter a new 4-digit ID + `=`.
