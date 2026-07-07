@@ -1,0 +1,13 @@
+{
+  "name": "electrothon-access-server",
+  "version": "1.0.0",
+  "description": "Access log server with SQLite persistence and a dashboard for ESP32 terminal Phase 2 cloud sync",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "better-sqlite3": "^11.3.0"
+  }
+}
